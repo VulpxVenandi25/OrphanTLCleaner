@@ -2,5 +2,6 @@
   "locale": "es_ES",
   "theme": "dark",
   "comment_blocks": false,
-  "test_key": null
+  "test_key": null,
+  "__test__": null
 }
