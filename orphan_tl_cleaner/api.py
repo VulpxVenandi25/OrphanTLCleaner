@@ -10,26 +10,34 @@ class Cleaner:
         with open(lint_file, 'r', encoding='utf-8') as f:
             content = f.read()
         pattern = r'\(id (\w+)\)'
-        return re.findall(pattern, content)
+        # Usamos set() para eliminar duplicados y hacer búsquedas instantáneas
+        return list(set(re.findall(pattern, content)))
 
     @staticmethod
     def process_file(content, identifiers, language, comment_blocks):
-        for identifier in identifiers:
-            pattern = rf'(?m)^translate\s+{re.escape(language)}\s+{re.escape(identifier)}:(.*?)^(?=\S|\Z)'
-            compiled_pattern = re.compile(pattern, re.DOTALL)
-            bloque_match = compiled_pattern.search(content)
-            if bloque_match:
-                bloque_completo = bloque_match.group(0)
-                if comment_blocks:
-                    lineas_bloque = bloque_completo.strip().split("\n")
-                    lineas_modificadas = ["# " + linea if linea.strip() else "" for linea in lineas_bloque]
-                    bloque_modificado = "\n".join(lineas_modificadas) + "\n\n"
-                else:
-                    bloque_modificado = ""
+        if not identifiers:
+            return content
 
-                content = content.replace(bloque_completo, bloque_modificado)
+        # 1. Creamos un grupo de captura con todos los identificadores: (id1|id2|id3...)
+        # Esto permite que el motor de Regex busque cualquiera de ellos en una sola pasada.
+        escaped_ids = "|".join(re.escape(i) for i in identifiers)
+        
+        # 2. Expresión regular que coincide con el bloque completo de traducción de Ren'Py
+        pattern = rf'(?m)^translate\s+{re.escape(language)}\s+({escaped_ids}):(.*?)^(?=\S|\Z)'
+        compiled_pattern = re.compile(pattern, re.DOTALL)
 
-        return content
+        # 3. Función interna que decidirá qué hacer cada vez que encuentre un bloque válido
+        def replacer(match):
+            bloque_completo = match.group(0)
+            if comment_blocks:
+                lineas_bloque = bloque_completo.strip().split("\n")
+                lineas_modificadas = ["# " + linea if linea.strip() else "" for linea in lineas_bloque]
+                return "\n".join(lineas_modificadas) + "\n\n"
+            else:
+                return ""
+
+        # Reemplaza todos los bloques huérfanos del archivo en un único escaneo
+        return compiled_pattern.sub(replacer, content)
 
     def run_tool(self, directory, lint_file, language, comment_blocks, locale='es_ES'):
         identifiers = self.load_identifiers(lint_file)
@@ -39,13 +47,16 @@ class Cleaner:
         t = TRANSLATIONS.get(locale, TRANSLATIONS['es_ES'])
         files_processed = []
 
+        # El bucle sigue procesando los archivos uno por uno
         for root, _, files in os.walk(directory):
             for file in files:
                 if file.endswith('.rpy') or file.endswith('.rpym'):
                     filepath = os.path.join(root, file)
+                    
                     with open(filepath, 'r', encoding='utf-8') as f:
                         content = f.read()
 
+                    # Ahora este paso unitario es drásticamente más rápido
                     updated_content = self.process_file(content, identifiers, language, comment_blocks)
 
                     if updated_content != content:

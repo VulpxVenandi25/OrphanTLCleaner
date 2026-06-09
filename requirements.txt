@@ -9,6 +9,7 @@ cryptography==48.0.0
 fastapi==0.115.0
 h11==0.16.0
 idna==3.18
+packaging==26.2
 proxy_tools==0.1.0
 pycparser==3.0
 pydantic==2.13.4
@@ -16,11 +17,12 @@ pydantic_core==2.46.4
 PyQt5==5.15.7
 PyQt5-Qt5==5.15.2
 PyQt5_sip==12.18.0
+PyQtWebEngine==5.15.7
+PyQtWebEngine-Qt5==5.15.2
 python-dotenv==1.2.2
 pythonnet==3.1.0
 pywebview==6.2.1
-qtpy>=2.3.0
-PyQtWebEngine>=5.15.0
+QtPy==2.4.3
 starlette==0.38.6
 typing-inspection==0.4.2
 typing_extensions==4.15.0

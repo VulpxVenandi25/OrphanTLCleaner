@@ -1,5 +1,4 @@
 import json
-
 import webview
 
 from .api import Cleaner
@@ -357,14 +356,14 @@ class Api:
         self.settings.save(key, value)
 
     def select_directory(self):
-        result = self.window.create_file_dialog(webview.FOLDER_DIALOG)
+        result = self.window.create_file_dialog(webview.FileDialog.FOLDER) # type: ignore
         if result:
             return result[0]
         return None
 
     def select_lint_file(self):
-        result = self.window.create_file_dialog(
-            webview.OPEN_DIALOG,
+        result = self.window.create_file_dialog( # type: ignore
+            webview.FileDialog.OPEN,
             file_types=('Text Files (*.txt)', 'All Files (*.*)')
         )
         if result:
