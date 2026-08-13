@@ -1,3 +1,12 @@
+import os
+import sys
+
+if sys.platform.startswith('linux'):
+    os.environ.setdefault(
+        'QTWEBENGINE_CHROMIUM_FLAGS',
+        '--disable-gpu --no-sandbox --disable-gpu-compositing',
+    )
+
 import webview
 
 from orphan_tl_cleaner.gui import Api, build_html
