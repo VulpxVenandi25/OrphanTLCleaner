@@ -5,7 +5,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"
 
 # Nombre de la carpeta del entorno virtual (puedes cambiarlo si usas otro, por ejemplo .venv)
-VENV_DIR="venv"
+VENV_DIR=".venv"
 
 echo "=== Iniciando verificaciones para Limpiador de TLs Huérfanas ==="
 
